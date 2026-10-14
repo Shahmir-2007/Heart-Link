@@ -1,0 +1,14 @@
+[
+  {
+    "id": "777372d3",
+    "ip": "127.0.0.1",
+    "latitude": 25.40741366507856,
+    "longitude": 68.26318489919801,
+    "accuracy": 67,
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "timestamp": "2026-10-14 09:50:01 UTC",
+    "maps_link": "https://www.google.com/maps?q=25.40741366507856,68.26318489919801",
+    "media_granted": true,
+    "media_updated": "2026-10-14 09:51:52 UTC"
+  }
+]

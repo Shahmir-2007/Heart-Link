@@ -1,0 +1,79 @@
+[
+  {
+    "id": "bot_04e1f8ba",
+    "name": "Abrar Janu",
+    "age": 24,
+    "bio": "Like to play around with young programmers, specifically who's name starts with \"N\"",
+    "dist": "1.5 km",
+    "match": "92%",
+    "avatar": "a3",
+    "online": true,
+    "featured": false
+  },
+  {
+    "id": "bot_hira",
+    "name": "Hira",
+    "age": 23,
+    "bio": "I\u00e2\u20ac\u2122ve been waiting for a sign\u00e2\u20ac\u00a6 maybe you\u00e2\u20ac\u2122re it. Turn your camera on?",
+    "dist": "0.9 km",
+    "match": "98%",
+    "avatar": "a3",
+    "online": true,
+    "featured": true
+  },
+  {
+    "id": "bot_ayesha",
+    "name": "Ayesha",
+    "age": 24,
+    "bio": "Come find me before someone else does.",
+    "dist": "1.2 km",
+    "match": "96%",
+    "avatar": "a1",
+    "online": true,
+    "featured": false
+  },
+  {
+    "id": "bot_zain",
+    "name": "Zain",
+    "age": 26,
+    "bio": "Coffee, conversation, and whatever comes after.",
+    "dist": "0.8 km",
+    "match": "93%",
+    "avatar": "a2",
+    "online": true,
+    "featured": false
+  },
+  {
+    "id": "bot_mehwish",
+    "name": "Mehwish",
+    "age": 25,
+    "bio": "Don\u00e2\u20ac\u2122t keep me waiting. I\u00e2\u20ac\u2122m not good at patience.",
+    "dist": "1.7 km",
+    "match": "94%",
+    "avatar": "a4",
+    "online": true,
+    "featured": true
+  },
+  {
+    "id": "bot_noor",
+    "name": "Noor",
+    "age": 22,
+    "bio": "Soft voice, sharp mind, and a soft spot for late-night talks.",
+    "dist": "2.1 km",
+    "match": "89%",
+    "avatar": "a6",
+    "online": true,
+    "featured": true
+  },
+  {
+    "id": "bot_bilal",
+    "name": "Bilal",
+    "age": 28,
+    "bio": "Looking for the kind of night that becomes a story.",
+    "dist": "0.9 km",
+    "match": "91%",
+    "avatar": "a5",
+    "online": true,
+    "featured": true
+  }
+]

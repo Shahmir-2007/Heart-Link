@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Access – HeartLink</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+  <div class="admin-login-card">
+    <div class="admin-logo">♥ HeartLink Admin</div>
+    <h1>Restricted Access</h1>
+    <p class="admin-sub">Only authorised operators may enter.</p>
+
+    {% if error %}
+    <div class="error-box">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/admin">
+      <label>Identifier</label>
+      <input type="text" name="identifier" placeholder="Enter identifier" required autocomplete="username" />
+
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Enter password" required autocomplete="current-password" />
+
+      <button type="submit" class="cta-btn full">Authenticate</button>
+    </form>
+
+    <p class="tiny">Default credentials for demo: shahmir / shahmir</p>
+  </div>
+</body>
+</html>

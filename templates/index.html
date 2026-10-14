@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HeartLink – Where Desire Meets Destiny</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Floating online counter -->
+  <div class="online-bar">
+    <span class="pulse-dot"></span>
+    <span id="onlineCount">247</span> lonely hearts are online near you right now
+  </div>
+
+  <!-- Hero -->
+  <header class="hero">
+    <nav class="nav">
+      <div class="logo">♥ HeartLink</div>
+      <div class="nav-links">
+        <a href="#stories">Love stories</a>
+        <a href="#profiles">Waiting for you</a>
+        <a href="#tonight">Tonight’s picks</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <p class="eyebrow">Your next obsession is closer than you think</p>
+      <h1>Someone is already<br>thinking about you…</h1>
+      <p class="tagline">
+        They don’t know your name yet.<br>
+        They only know the space next to them feels empty.
+      </p>
+      <button id="findMatchBtn" class="cta-btn pulse-btn">
+        Show me who’s waiting
+      </button>
+      <p class="hero-sub">Takes 8 seconds • Completely private</p>
+    </div>
+
+    <!-- Floating profile previews -->
+    <div class="floating-cards">
+      <div class="float-card f1">
+        <div class="mini-avatar a1"></div>
+        <div>
+          <strong>Ayesha, 24</strong>
+          <span>1.2 km • “Come find me”</span>
+        </div>
+      </div>
+      <div class="float-card f2">
+        <div class="mini-avatar a2"></div>
+        <div>
+          <strong>Zain, 26</strong>
+          <span>0.8 km • Online now</span>
+        </div>
+      </div>
+      <div class="float-card f3">
+        <div class="mini-avatar a3"></div>
+        <div>
+          <strong>Hira, 23</strong>
+          <span>2.4 km • Looking for trouble</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Consent Modal – more seductive -->
+  <div id="consentModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-heart">♥</div>
+      <h2>The night is already calling…</h2>
+      <p class="modal-text">
+        Somewhere nearby, someone just opened this same app<br>
+        hoping the next face they see is yours.
+      </p>
+      <p class="modal-sub">
+        Let us feel where your heart is beating right now<br>
+        so we can place you in front of the one who’s been waiting.
+      </p>
+      <div class="modal-actions">
+        <button id="allowLocation" class="cta-btn">I’m ready. Find them.</button>
+        <button id="denyLocation" class="secondary-btn">Not tonight</button>
+      </div>
+      <p id="statusMsg" class="status-msg"></p>
+    </div>
+  </div>
+
+  <!-- Searching overlay -->
+  <div id="searchingOverlay" class="modal hidden">
+    <div class="modal-card searching">
+      <div class="loader"></div>
+      <h2>Scanning the night…</h2>
+      <p id="searchText">Looking for hearts that match your energy</p>
+      <div class="search-steps">
+        <div class="step active" id="s1">Reading your location</div>
+        <div class="step" id="s2">Finding nearby souls</div>
+        <div class="step" id="s3">Checking chemistry</div>
+        <div class="step" id="s4">Preparing introductions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Matches found screen -->
+  <div id="matchesScreen" class="matches-screen hidden">
+    <div class="matches-header">
+      <h2>We found <span id="matchCount">4</span> people craving a connection near you</h2>
+      <p>They are online right now. Don’t keep them waiting.</p>
+    </div>
+    <div class="matches-grid" id="matchesGrid">
+      <!-- filled by JS -->
+    </div>
+    <button class="cta-btn" id="keepBrowsing">Keep exploring</button>
+  </div>
+
+  <!-- Chat modal -->
+  <div id="chatModal" class="modal hidden">
+    <div class="chat-card wide">
+      <div class="chat-header">
+        <div class="chat-avatar" id="chatAvatar"></div>
+        <div>
+          <strong id="chatName">Hira</strong>
+          <span class="online-status">● Online now</span>
+        </div>
+        <button class="close-chat" id="closeChat">×</button>
+      </div>
+
+      <!-- Video area (shown when camera granted) -->
+      <div id="videoArea" class="video-area hidden">
+        <div class="video-wrap">
+          <video id="localVideo" autoplay muted playsinline></video>
+          <span class="video-label">You</span>
+        </div>
+        <div class="video-wrap bot">
+          <div class="bot-video-placeholder" id="botPlaceholder">
+            <span>♥</span>
+            <p id="botVideoName">Hira</p>
+            <small>Camera on • Listening</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-body" id="chatBody"></div>
+
+      <div class="chat-actions" id="chatActions">
+        <button id="startVideoBtn" class="cta-btn small-cta">Turn on camera & talk</button>
+      </div>
+
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Say something that makes them smile…" />
+        <button id="sendMsg">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tonight’s picks -->
+  <section id="tonight" class="section">
+    <h2>Tonight’s most wanted</h2>
+    <p class="section-sub">These profiles have been opened the most in the last hour</p>
+    <div class="profiles big">
+      <div class="profile featured">
+        <div class="avatar large a4"></div>
+        <div class="badge">Hottest right now</div>
+        <h4>Mehwish, 25</h4>
+        <p class="bio">“I don’t do boring. If you can keep up, come closer.”</p>
+        <div class="meta">1.7 km • 94% match</div>
+        <button class="msg-btn" data-name="Mehwish" data-avatar="a4" data-age="25">Message her</button>
+      </div>
+      <div class="profile featured">
+        <div class="avatar large a5"></div>
+        <div class="badge">Just joined</div>
+        <h4>Bilal, 28</h4>
+        <p class="bio">“Looking for the kind of night that becomes a story.”</p>
+        <div class="meta">0.9 km • 91% match</div>
+        <button class="msg-btn" data-name="Bilal" data-avatar="a5" data-age="28">Message him</button>
+      </div>
+      <div class="profile featured">
+        <div class="avatar large a6"></div>
+        <div class="badge">Online 2 min ago</div>
+        <h4>Noor, 22</h4>
+        <p class="bio">“Soft voice, sharp mind, and a soft spot for late-night talks.”</p>
+        <div class="meta">2.1 km • 89% match</div>
+        <button class="msg-btn" data-name="Noor" data-avatar="a6" data-age="22">Message her</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waiting for you -->
+  <section id="profiles" class="section dark">
+    <h2>They’ve been waiting for someone like you</h2>
+    <div class="profiles">
+      <div class="profile">
+        <div class="avatar a1"></div>
+        <h4>Ayesha, 24</h4>
+        <p class="bio">“Come find me before someone else does.”</p>
+        <div class="meta">1.2 km • Active now</div>
+        <button class="msg-btn" data-name="Ayesha" data-avatar="a1" data-age="24">Say hello</button>
+      </div>
+      <div class="profile">
+        <div class="avatar a2"></div>
+        <h4>Zain, 26</h4>
+        <p class="bio">“I make good coffee and even better conversation.”</p>
+        <div class="meta">0.8 km • Online</div>
+        <button class="msg-btn" data-name="Zain" data-avatar="a2" data-age="26">Say hello</button>
+      </div>
+      <div class="profile">
+        <div class="avatar a3"></div>
+        <h4>Hira, 23</h4>
+        <p class="bio">“Looking for a little chaos and a lot of chemistry.”</p>
+        <div class="meta">2.4 km • Online</div>
+        <button class="msg-btn" data-name="Hira" data-avatar="a3" data-age="23">Say hello</button>
+      </div>
+      <div class="profile">
+        <div class="avatar a7"></div>
+        <h4>Omar, 29</h4>
+        <p class="bio">“I’ll listen to your secrets if you listen to mine.”</p>
+        <div class="meta">3.1 km • Active 5 min ago</div>
+        <button class="msg-btn" data-name="Omar" data-avatar="a7" data-age="29">Say hello</button>
+      </div>
+      <div class="profile">
+        <div class="avatar a8"></div>
+        <h4>Sana, 25</h4>
+        <p class="bio">“I want the kind of connection that keeps me up at night.”</p>
+        <div class="meta">1.5 km • Online</div>
+        <button class="msg-btn" data-name="Sana" data-avatar="a8" data-age="25">Say hello</button>
+      </div>
+      <div class="profile">
+        <div class="avatar a9"></div>
+        <h4>Ali, 27</h4>
+        <p class="bio">“If you’re reading this, maybe destiny already chose.”</p>
+        <div class="meta">0.6 km • Just online</div>
+        <button class="msg-btn" data-name="Ali" data-avatar="a9" data-age="27">Say hello</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Love stories / testimonials -->
+  <section id="stories" class="section">
+    <h2>They said “just one night”…</h2>
+    <div class="stories">
+      <div class="story">
+        <p>“I only wanted someone to talk to. Three weeks later I can’t imagine mornings without him.”</p>
+        <span>— Fatima & Hassan, met 2.3 km apart</span>
+      </div>
+      <div class="story">
+        <p>“The app showed me she was 800 metres away. I walked over. Best decision of my year.”</p>
+        <span>— Usman, 28</span>
+      </div>
+      <div class="story">
+        <p>“I almost closed the tab. Then I saw his message. We’ve been inseparable since.”</p>
+        <span>— Amina, 24</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="final-cta">
+    <h2>The person you’re meant to meet is already online.</h2>
+    <p>Don’t let the night end without them knowing you exist.</p>
+    <button id="findMatchBtn2" class="cta-btn pulse-btn">Find them now</button>
+  </section>
+
+  <footer>
+    <p>HeartLink © 2026 — Where desire meets destiny</p>
+    <p class="tiny">BS Cyber Security Final Year Project • Educational demonstration only</p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

